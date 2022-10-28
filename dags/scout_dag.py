@@ -79,8 +79,8 @@ with DAG(
             arguments=["-c", "echo ---scout_starting-" + acc + "; eval $(aws sts assume-role --role-arn arn:aws:iam::" + acc + ":role/ait-scout-scan-role --role-session-name scout-sts | jq -r '.Credentials | \"export AWS_ACCESS_KEY_ID=\(.AccessKeyId)\nexport AWS_SECRET_ACCESS_KEY=\(.SecretAccessKey)\nexport AWS_SESSION_TOKEN=\(.SessionToken)\n\"'); /root/scoutsuite/bin/scout aws --no-browser; tail scoutsuite-report/scoutsuite-results/scoutsuite_results_aws-*.js -n +2 > /tmp/scoutsuite_results_aws-" + acc + ".js; export AWS_ACCESS_KEY_ID=; export AWS_SECRET_ACCESS_KEY=; export AWS_SESSION_TOKEN=; aws s3 cp /tmp/scoutsuite_results_aws-*.js s3://" + BUCKET_NAME + "/artefacts/" + acc + "/{{ ds}}/; tail scoutsuite-report/scoutsuite-results/scoutsuite_results_aws-*.js -n +2 | jq '.last_run.summary' | tee /airflow/xcom/return.json"],
             get_logs=True,
             is_delete_operator_pod=True,
-            in_cluster=False,
-            config_file=KUBE_CONF_PATH,
+            in_cluster=True,
+            #config_file=KUBE_CONF_PATH,
             do_xcom_push=True,
             startup_timeout_seconds=60,
         )
