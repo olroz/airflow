@@ -9,10 +9,10 @@ from airflow.operators.python_operator import PythonOperator
 from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import (
                                                         KubernetesPodOperator)
 from airflow.providers.amazon.aws.operators.sns import SnsPublishOperator
-from airflow.providers.amazon.aws.hooks.aws_dynamodb import AwsDynamoDBHook
+from airflow.providers.amazon.aws.hooks.dynamodb import DynamoDBHook
 from airflow.operators.python import ShortCircuitOperator
 from airflow.models import Variable
-from airflow.providers.amazon.aws.sensors.s3_key import S3KeySensor
+from airflow.providers.amazon.aws.sensors.s3 import S3KeySensor
 
 
 with DAG(
@@ -46,7 +46,7 @@ with DAG(
 
     def save_to_dynamo(ds, ti, **kwargs):
         scoutres = ti.xcom_pull('run_scout_check_'+acc)
-        dynamodb = AwsDynamoDBHook(aws_conn_id='aws_default',
+        dynamodb = DynamoDBHook(aws_conn_id='aws_default',
             table_name='scoutsuite-db', table_keys=['account_id'], region_name='eu-west-1')
         dynamodb.write_batch_data(
             [{'account_id': acc, 'day': ds, 'scout-results': scoutres}]
@@ -104,6 +104,3 @@ with DAG(
 
 
         run_scout_check >> save_results >> task_check_scan >> publish_message
-
-
-
