@@ -32,6 +32,7 @@ with DAG(
 
     def check_scan(ds, ti, **kwargs):
         scoutres = ti.xcom_pull('run_scout_check_'+acc)
+        print(acc)
         data1 = json.dumps(scoutres)
         data = json.loads(data1)
         for (k, v) in data.items():
@@ -46,6 +47,7 @@ with DAG(
 
     def save_to_dynamo(ds, ti, **kwargs):
         scoutres = ti.xcom_pull('run_scout_check_'+acc)
+        print(acc)
         dynamodb = DynamoDBHook(aws_conn_id='aws_default',
             table_name='scoutsuite-db', table_keys=['account_id'], region_name='eu-west-1')
         dynamodb.write_batch_data(
@@ -104,3 +106,5 @@ with DAG(
 
 
         run_scout_check >> save_results >> task_check_scan >> publish_message
+
+
