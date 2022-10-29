@@ -71,7 +71,7 @@ with DAG(
         run_scout_check=KubernetesPodOperator(
             task_id=f"run_scout_check_{acc}",
             cluster_context='aws',
-            namespace="airflow",
+            namespace="prod",
             name="air_scout_pod_1",
             image='933560321714.dkr.ecr.eu-west-1.amazonaws.com/scout-suite:5.12.0',
             #service_account_name='sa-scout',
