@@ -74,7 +74,7 @@ with DAG(
             namespace="airflow",
             name="air_scout_pod_1",
             image='933560321714.dkr.ecr.eu-west-1.amazonaws.com/scout-suite:5.12.0',
-            #service_account_name='sa-scout',
+            service_account_name='sa-scout',
             cmds=["bash"],
             arguments=["-c", "echo ---scout_starting-" + acc + "; eval $(aws sts assume-role --role-arn arn:aws:iam::" + acc + ":role/ait-scout-scan-role --role-session-name scout-sts | jq -r '.Credentials | \"export AWS_ACCESS_KEY_ID=\(.AccessKeyId)\nexport AWS_SECRET_ACCESS_KEY=\(.SecretAccessKey)\nexport AWS_SESSION_TOKEN=\(.SessionToken)\n\"'); /root/scoutsuite/bin/scout aws --no-browser; tail scoutsuite-report/scoutsuite-results/scoutsuite_results_aws-*.js -n +2 > /tmp/scoutsuite_results_aws-" + acc + ".js; export AWS_ACCESS_KEY_ID=; export AWS_SECRET_ACCESS_KEY=; export AWS_SESSION_TOKEN=; aws s3 cp /tmp/scoutsuite_results_aws-*.js s3://" + BUCKET_NAME + "/artefacts/" + acc + "/{{ ds}}/; tail scoutsuite-report/scoutsuite-results/scoutsuite_results_aws-*.js -n +2 | jq '.last_run.summary' | tee /airflow/xcom/return.json"],
             get_logs=True,
