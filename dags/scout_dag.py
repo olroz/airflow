@@ -45,9 +45,10 @@ with DAG(
             print('Doesnot exist')
             return False
 
-    def save_to_dynamo(ds, ti, acc, **kwargs):
+    def save_to_dynamo(ds, ti, acc, *op_args, **kwargs):
         scoutres = ti.xcom_pull('run_scout_check_'+acc)
         print(acc)
+        print(op_args)
         dynamodb = DynamoDBHook(aws_conn_id='aws_default',
             table_name='scoutsuite-db', table_keys=['account_id'], region_name='eu-west-1')
         dynamodb.write_batch_data(
@@ -108,3 +109,4 @@ with DAG(
 
         run_scout_check >> save_results >> task_check_scan >> publish_message
 
+#ait-scout-scan-role
