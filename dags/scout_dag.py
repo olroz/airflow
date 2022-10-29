@@ -30,7 +30,7 @@ with DAG(
     ACCOUNTS = ACCOUNTSVAR.split(',')
 
 
-    def check_scan(ds, ti, **kwargs):
+    def check_scan(ds, ti, acc, *op_args, **kwargs):
         scoutres = ti.xcom_pull('run_scout_check_'+acc)
         print(acc)
         data1 = json.dumps(scoutres)
@@ -48,7 +48,7 @@ with DAG(
     def save_to_dynamo(ds, ti, acc, *op_args, **kwargs):
         scoutres = ti.xcom_pull('run_scout_check_'+acc)
         print(acc)
-        print(op_args)
+        #print(op_args)
         dynamodb = DynamoDBHook(aws_conn_id='aws_default',
             table_name='scoutsuite-db', table_keys=['account_id'], region_name='eu-west-1')
         dynamodb.write_batch_data(
@@ -98,6 +98,7 @@ with DAG(
         task_check_scan = ShortCircuitOperator(
             task_id=f'check_scan_{acc}',
             python_callable=check_scan,
+            op_kwargs={"acc":acc},
         )
 
         publish_message = SnsPublishOperator(
@@ -109,4 +110,4 @@ with DAG(
 
         run_scout_check >> save_results >> task_check_scan >> publish_message
 
-#ait-scout-scan-role
+
