@@ -45,7 +45,7 @@ with DAG(
             print('Doesnot exist')
             return False
 
-    def save_to_dynamo(ds, ti, **kwargs):
+    def save_to_dynamo(ds, ti, acc, **kwargs):
         scoutres = ti.xcom_pull('run_scout_check_'+acc)
         print(acc)
         dynamodb = DynamoDBHook(aws_conn_id='aws_default',
@@ -91,6 +91,7 @@ with DAG(
             task_id=f'save_to_dynamo_{acc}',
             python_callable=save_to_dynamo,
             provide_context=True,
+            op_kwargs={"acc":acc},
         )
         
         task_check_scan = ShortCircuitOperator(
@@ -106,5 +107,4 @@ with DAG(
 
 
         run_scout_check >> save_results >> task_check_scan >> publish_message
-
 
