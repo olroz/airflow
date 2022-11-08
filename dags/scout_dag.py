@@ -37,7 +37,7 @@ with DAG(
             if v["flagged_items"] >0 and v["max_level"] == 'danger' :
               print('danger')
               return True
-          else:
+            else:
               print('no danger')
               return False
 
