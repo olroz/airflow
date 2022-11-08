@@ -16,7 +16,7 @@ from airflow.providers.amazon.aws.sensors.s3 import S3KeySensor
 
 
 with DAG(
-    start_date=datetime(2022,10,23),
+    start_date=datetime(2022,11,5),
     catchup=True,
     schedule_interval="0 5 * * *",
     tags=['sandbox'],
@@ -25,7 +25,6 @@ with DAG(
 
     KUBE_CONF_PATH = '/usr/local/airflow/dags/kube_config_mwaa-sandbox-PROD.yaml'
     BUCKET_NAME = 'mwaa-sandbox-flow-prod'
-    #ACCOUNTID = '933560321714'
     ACCOUNTSVAR = Variable.get("scout-accounts")
     ACCOUNTS = ACCOUNTSVAR.split(',')
 
@@ -55,19 +54,7 @@ with DAG(
             [{'account_id': acc, 'day': ds, 'scout-results': scoutres}]
         )
 
-    # def get_accounts():
-    #     #return "1111,2222"
-    #     return str(random.randint(1111, 2222)) + "," + str(random.randint(1111, 2222))
 
-
-    # ACCOUNTSVAR=get_accounts()
-    # ACCOUNTS = ACCOUNTSVAR.split(',')
-
-    sensor_one_key = S3KeySensor(
-        task_id="sensor_one_key",
-        bucket_name='mwaa-sandbox-flow-prod',
-        bucket_key='key.txt',
-    )
 
     for acc in ACCOUNTS:
         acc = acc.strip()
