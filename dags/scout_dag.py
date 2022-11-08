@@ -23,7 +23,6 @@ with DAG(
     dag_id='scout_dag'
 ) as dag:
 
-    KUBE_CONF_PATH = '/usr/local/airflow/dags/kube_config_mwaa-sandbox-PROD.yaml'
     BUCKET_NAME = 'mwaa-sandbox-flow-prod'
     ACCOUNTSVAR = Variable.get("scout-accounts")
     ACCOUNTS = ACCOUNTSVAR.split(',')
@@ -36,24 +35,20 @@ with DAG(
         data = json.loads(data1)
         for (k, v) in data.items():
             if v["flagged_items"] >0 and v["max_level"] == 'danger' :
-                exists = True
-        if exists:
-            print('Exists')
-            return True
-        else:
-            print('Doesnot exist')
-            return False
+              print('danger')
+              return True
+          else:
+              print('no danger')
+              return False
 
     def save_to_dynamo(ds, ti, acc, *op_args, **kwargs):
         scoutres = ti.xcom_pull('run_scout_check_'+acc)
         print(acc)
-        #print(op_args)
         dynamodb = DynamoDBHook(aws_conn_id='aws_default',
             table_name='scoutsuite-db', table_keys=['account_id'], region_name='eu-west-1')
         dynamodb.write_batch_data(
             [{'account_id': acc, 'day': ds, 'scout-results': scoutres}]
         )
-
 
 
     for acc in ACCOUNTS:
@@ -70,7 +65,6 @@ with DAG(
             get_logs=True,
             is_delete_operator_pod=True,
             in_cluster=True,
-            #config_file=KUBE_CONF_PATH,
             do_xcom_push=True,
             startup_timeout_seconds=60,
         )
