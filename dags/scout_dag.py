@@ -37,10 +37,10 @@ with DAG(
             if v["flagged_items"] >0 and v["max_level"] == 'danger' :
                 exists = True
         if exists:
-            print('Exists')
+            print('danger')
             return True
         else:
-            print('Doesnot exist')
+            print('no danger')
             return False
 
     def save_to_dynamo(ds, ti, acc, *op_args, **kwargs):
