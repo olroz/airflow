@@ -35,11 +35,13 @@ with DAG(
         data = json.loads(data1)
         for (k, v) in data.items():
             if v["flagged_items"] >0 and v["max_level"] == 'danger' :
-                print('danger')
-                return True
-            else:
-                print('no danger')
-                return False
+                exists = True
+        if exists:
+            print('Exists')
+            return True
+        else:
+            print('Doesnot exist')
+            return False
 
     def save_to_dynamo(ds, ti, acc, *op_args, **kwargs):
         scoutres = ti.xcom_pull('run_scout_check_'+acc)
