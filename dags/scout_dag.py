@@ -24,8 +24,8 @@ with DAG(
 ) as dag:
 
     BUCKET_NAME = 'mwaa-sandbox-flow-prod'
-    ACCOUNTSVAR = Variable.get("scout-accounts")
-    ACCOUNTS = ACCOUNTSVAR.split(',')
+    ACCOUNTS = Variable.get("scout-accounts").split(',')
+    #ACCOUNTS = ACCOUNTSVAR.split(',')
 
 
     def check_scan(ds, ti, acc, *op_args, **kwargs):
